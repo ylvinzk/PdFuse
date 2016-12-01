@@ -1,6 +1,6 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PdFuse.Model
@@ -10,13 +10,12 @@ namespace PdFuse.Model
         private PdfReader _pdfReader;
         private Document _document;
         private PdfCopy _pdfCopy;
-        private ObservableCollection<string> _sourceFiles;
+        private List<string> _sourceFiles;
         private string _resultPath;
 
-        public Merger(ObservableCollection<string> sourceFiles, string resultPath)
+        public Merger(List<string> sourceFiles, string resultPath)
         {
-            _sourceFiles = new ObservableCollection<string>();
-            _sourceFiles = sourceFiles;
+            _sourceFiles = new List<string>(sourceFiles);
             _resultPath = resultPath;
         }
 

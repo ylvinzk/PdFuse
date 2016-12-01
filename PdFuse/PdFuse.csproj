@@ -70,6 +70,7 @@
     </ApplicationDefinition>
     <Compile Include="App\SingleInstance.cs" />
     <Compile Include="ViewModel\MergerViewModel.cs" />
+    <Compile Include="ViewModel\FileOperation.cs" />
     <Compile Include="ViewModel\SplitterViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

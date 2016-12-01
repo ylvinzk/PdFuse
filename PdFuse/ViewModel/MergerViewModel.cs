@@ -1,22 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PdFuse.Model;
+using System.Windows.Controls;
 
 namespace PdFuse.ViewModel
 {
     public class MergerViewModel
     {
-        public MergerViewModel(string[] sourceFiles)
+        private List<string> _sourceFiles;
+        private Merger _merger;
+
+        public MergerViewModel(ItemCollection sourceFiles, string resultPath)
         {
-            //Merger _merger = new Merger(sourceFiles, )
+            _sourceFiles = new List<string>(sourceFiles.OfType<string>());
+            _merger = new Merger(_sourceFiles, resultPath);
         }
 
-        internal void ShowFiles()
+        public void MergePdf()
         {
-            throw new NotImplementedException();
+            _merger.MergePdf();
         }
     }
 }

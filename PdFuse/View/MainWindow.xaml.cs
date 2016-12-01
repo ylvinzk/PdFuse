@@ -2,11 +2,8 @@
 using System.Windows.Navigation;
 using System.Diagnostics;
 using Microsoft.Win32;
-using Ookii.Dialogs.Wpf;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using PdFuse.ViewModel;
 
 namespace PdFuse.View
@@ -16,7 +13,6 @@ namespace PdFuse.View
     /// </summary>
     public partial class MainWindow : Window
     {
-        private SplitterViewModel _splitterViewModel;
         private MergerViewModel _mergerViewModel;
 
         public MainWindow()
@@ -24,27 +20,38 @@ namespace PdFuse.View
             InitializeComponent();
         }
 
-        #region App General Controls
+        #region General Controls
+
+        /// <summary>
+        /// Close app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// Minimize window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }
 
+        /// <summary>
+        /// Drag window by the title bar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TitleBarGrid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             DragMove();
         }
 
-        private void OnNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(e.Uri.AbsoluteUri);
-            e.Handled = true;
-        }
         #endregion
 
         #region Split Tab
@@ -91,6 +98,12 @@ namespace PdFuse.View
         #endregion
 
         #region Merge Tab
+
+        /// <summary>
+        /// Add PDF files to the list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddFileButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -102,53 +115,64 @@ namespace PdFuse.View
             {
                 foreach (string fileName in openFileDialog.FileNames)
                     SourceFilesListBox.Items.Add(fileName);
+
+                if (SourceFilesListBox.Items.Count > 0)
+                {
+                    DeleteButton.IsEnabled = true;
+
+                    if (SourceFilesListBox.Items.Count > 1)
+                        EnableMoveButtons();
+                }
+
+                ProcessStatusTextBlock.Text = string.Empty;
             }
         }
 
+        /// <summary>
+        /// Move up a file path in the list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MoveUpButton_Click(object sender, RoutedEventArgs e)
         {
-            object selectedPath = SourceFilesListBox.SelectedItem;
-            int selectedPathIndex = SourceFilesListBox.Items.IndexOf(selectedPath);
-            int nextPosition;
-
-            if (selectedPathIndex == 0)
-                nextPosition = SourceFilesListBox.Items.Count - 1;
-            else
-                nextPosition = selectedPathIndex - 1;
-
-            SourceFilesListBox.Items.Remove(selectedPath);
-            SourceFilesListBox.Items.Insert(nextPosition, selectedPath);
-            SourceFilesListBox.SelectedIndex = nextPosition;
+            if (SourceFilesListBox.SelectedItems.Count > 0)
+                OperateOnSelectedFile(FileOperation.MoveUp);
         }
 
+        /// <summary>
+        /// Move down a file path in the list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MoveDownButton_Click(object sender, RoutedEventArgs e)
         {
-            if (listBox1.SelectedItems.Count > 0)
-            {
-                object selected = listBox1.SelectedItem;
-                int indx = listBox1.Items.IndexOf(selected);
-                int totl = listBox1.Items.Count;
+            if (SourceFilesListBox.SelectedItems.Count > 0)
+                OperateOnSelectedFile(FileOperation.MoveDown);
+        }
 
-                if (indx == totl - 1)
-                {
-                    listBox1.Items.Remove(selected);
-                    listBox1.Items.Insert(0, selected);
-                    listBox1.SetSelected(0, true);
-                }
-                else
-                {
-                    listBox1.Items.Remove(selected);
-                    listBox1.Items.Insert(indx + 1, selected);
-                    listBox1.SetSelected(indx + 1, true);
-                }
+        /// <summary>
+        /// Delete a file path in the list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (SourceFilesListBox.SelectedItems.Count > 0)
+                OperateOnSelectedFile(FileOperation.Delete);
+
+            if (SourceFilesListBox.Items.Count < 2)
+            {
+                DisableMoveButtons();
+                if (SourceFilesListBox.Items.Count == 0)
+                    DeleteButton.IsEnabled = false;
             }
         }
 
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// Define the result path to save the merged file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ResultFileSearchButton_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -157,17 +181,131 @@ namespace PdFuse.View
             saveFileDialog.FileName = "resultPDF_" + DateTime.Now.ToString("yyyyMMddHHmmss");
             saveFileDialog.Title = "Path to the resulting PDF";
             saveFileDialog.OverwritePrompt = true;
-            if (saveFileDialog.ShowDialog() == true && SourceFilesListBox.Items.Count > 0)
+            if (saveFileDialog.ShowDialog() == true)
             {
                 ResultFileTextBox.Text = saveFileDialog.FileName;
-                AddFileButton.IsEnabled = true;
+                ProcessStatusTextBlock.Text = string.Empty;
             }
         }
 
+        /// <summary>
+        /// Start the merging process
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(ResultFileTextBox.Text))
+            {
+                ProcessStatusTextBlock.Text = "Empty result path is invalid";
+                return;
+            }
 
+            if (SourceFilesListBox.Items.Count < 2)
+            {
+                ProcessStatusTextBlock.Text = "Not enough documents to merge";
+                return;
+            }
+
+            ProcessStatusTextBlock.Text = "Merge in progress...";
+            _mergerViewModel = new MergerViewModel(SourceFilesListBox.Items, ResultFileTextBox.Text);
+            _mergerViewModel.MergePdf();
+            ProcessStatusTextBlock.Text = "Merge is complete";
         }
+
+        /// <summary>
+        /// Open the directory to the result file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenResultFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(ResultFileTextBox.Text))
+            {
+                ProcessStatusTextBlock.Text = "Empty result path is invalid";
+                return;
+            }
+
+            Process.Start(@"" + Path.GetDirectoryName(ResultFileTextBox.Text));
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Apply an operation to a file path in the list
+        /// </summary>
+        /// <param name="operation"></param>
+        private void OperateOnSelectedFile(FileOperation operation)
+        {
+            ProcessStatusTextBlock.Text = string.Empty;
+
+            object selectedPath = SourceFilesListBox.SelectedItem;
+            int selectedPathIndex = SourceFilesListBox.Items.IndexOf(selectedPath);
+            int totalItems = SourceFilesListBox.Items.Count;
+            int nextPosition;
+
+            switch (operation)
+            {
+                case FileOperation.MoveUp:
+                    if (selectedPathIndex == 0)
+                        nextPosition = totalItems - 1;
+                    else
+                        nextPosition = selectedPathIndex - 1;
+                    break;
+                case FileOperation.MoveDown:
+                    if (selectedPathIndex == totalItems - 1)
+                        nextPosition = 0;
+                    else
+                        nextPosition = selectedPathIndex + 1;                    
+                    break;
+                default:
+                    if (selectedPathIndex == totalItems + 1
+                        || selectedPathIndex == 0)
+                        nextPosition = 0;
+                    else
+                        nextPosition = selectedPathIndex - 1;
+                    SourceFilesListBox.Items.Remove(selectedPath);
+                    SourceFilesListBox.SelectedIndex = nextPosition;
+                    return;
+            }
+
+            SourceFilesListBox.Items.Remove(selectedPath);
+            SourceFilesListBox.Items.Insert(nextPosition, selectedPath);
+            SourceFilesListBox.SelectedIndex = nextPosition;
+        }
+
+        /// <summary>
+        /// Enable Move buttons
+        /// </summary>
+        private void EnableMoveButtons()
+        {
+            MoveDownButton.IsEnabled = true;
+            MoveUpButton.IsEnabled = true;
+        }
+
+        /// <summary>
+        /// Disable Move buttons
+        /// </summary>
+        private void DisableMoveButtons()
+        {
+            MoveDownButton.IsEnabled = false;
+            MoveUpButton.IsEnabled = false;
+        }
+
+        #endregion
+
+        #region Help Tab
+
+        /// <summary>
+        /// Navigation to an URL
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(e.Uri.AbsoluteUri);
+            e.Handled = true;
+        }
+
         #endregion
     }
 }

@@ -195,20 +195,27 @@ namespace PdFuse.View
         /// <param name="e"></param>
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(ResultFileTextBox.Text))
-            {
-                ProcessStatusTextBlock.Text = "Empty result path is invalid";
-                return;
-            }
-
             if (SourceFilesListBox.Items.Count < 2)
             {
                 ProcessStatusTextBlock.Text = "Not enough documents to merge";
                 return;
             }
 
-            ProcessStatusTextBlock.Text = "Merge in progress...";
             _mergerViewModel = new MergerViewModel(SourceFilesListBox.Items, ResultFileTextBox.Text);
+
+            if (_mergerViewModel.ResultPathIsEmpty())
+            {
+                ProcessStatusTextBlock.Text = "Empty result path is invalid";
+                return;
+            }
+
+            if (_mergerViewModel.ResultPathIsInUse())
+            {
+                ProcessStatusTextBlock.Text = "Can not use same path in source and result";
+                return;
+            }
+
+            ProcessStatusTextBlock.Text = "Merge in progress...";
             _mergerViewModel.MergePdf();
             ProcessStatusTextBlock.Text = "Merge is complete";
         }
@@ -238,8 +245,8 @@ namespace PdFuse.View
         {
             ProcessStatusTextBlock.Text = string.Empty;
 
-            object selectedPath = SourceFilesListBox.SelectedItem;
-            int selectedPathIndex = SourceFilesListBox.Items.IndexOf(selectedPath);
+            int selectedPathIndex = SourceFilesListBox.SelectedIndex;
+            object selectedPath = SourceFilesListBox.Items.GetItemAt(selectedPathIndex);
             int totalItems = SourceFilesListBox.Items.Count;
             int nextPosition;
 
@@ -255,20 +262,19 @@ namespace PdFuse.View
                     if (selectedPathIndex == totalItems - 1)
                         nextPosition = 0;
                     else
-                        nextPosition = selectedPathIndex + 1;                    
+                        nextPosition = selectedPathIndex + 1;
                     break;
                 default:
-                    if (selectedPathIndex == totalItems + 1
-                        || selectedPathIndex == 0)
+                    if (selectedPathIndex == totalItems - 1)
                         nextPosition = 0;
                     else
-                        nextPosition = selectedPathIndex - 1;
-                    SourceFilesListBox.Items.Remove(selectedPath);
+                        nextPosition = selectedPathIndex;
+                    SourceFilesListBox.Items.RemoveAt(selectedPathIndex);
                     SourceFilesListBox.SelectedIndex = nextPosition;
                     return;
             }
 
-            SourceFilesListBox.Items.Remove(selectedPath);
+            SourceFilesListBox.Items.RemoveAt(selectedPathIndex);
             SourceFilesListBox.Items.Insert(nextPosition, selectedPath);
             SourceFilesListBox.SelectedIndex = nextPosition;
         }

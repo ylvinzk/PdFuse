@@ -132,6 +132,7 @@
                             <LineBreak/>
                             <Run Text="-Splitting PDF"/>
                         </TextBlock>
+                        <Image Source="/Assets/pdfuseIcon.ico" HorizontalAlignment="Right" Margin="505,0,0,0"/>
                     </StackPanel>
                     <TextBlock x:Name="SupportInfoTextBlock" Grid.Row="1" TextWrapping="Wrap" Margin="0,10,0,0"><Run FontWeight="Bold" Text="Contact the developer"/><LineBreak/>
                         <Run Text="Github: "/><Hyperlink NavigateUri="https://github.com/ylvinzk" RequestNavigate="OnNavigate"><Run Text="https://github.com/ylvinzk"/></Hyperlink>

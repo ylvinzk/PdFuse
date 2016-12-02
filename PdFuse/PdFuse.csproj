@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>pdfuseIcon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gu.Wpf.Adorners, Version=1.1.1.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Gu.Wpf.Adorners.1.1.1.3\lib\net45\Gu.Wpf.Adorners.dll</HintPath>
@@ -115,7 +118,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\pdfuseIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="pdfuseIcon.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

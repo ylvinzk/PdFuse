@@ -90,7 +90,6 @@
   <ItemGroup>
     <Compile Include="Model\Merger.cs" />
     <Compile Include="Model\Splitter.cs" />
-    <Compile Include="Model\SplitType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

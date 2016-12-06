@@ -1,5 +1,7 @@
 ﻿using System.Windows;
-using Microsoft.Shell.App;
+using Microsoft.Shell;
+using System;
+using System.Collections.Generic;
 
 namespace PdFuse
 {
@@ -8,7 +10,7 @@ namespace PdFuse
     /// Code provided by Arik Poznanski http://blogs.microsoft.co.il/arik/2010/05/28/wpf-single-instance-application/
     /// for single instance application
     /// </summary>
-    public partial class App : Application//, ISingleInstance
+    public partial class App : Application//, ISingleInstanceApp
     {
         //private const string Unique = "UniqueStringForSingleInstanceApp";
 

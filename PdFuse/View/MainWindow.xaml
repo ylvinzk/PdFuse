@@ -101,7 +101,7 @@
                             <Button x:Name="DeleteButton" Content="Delete" Height="35" Width="120" Margin="5,0,0,0" Style="{DynamicResource AppButton}" Click="DeleteButton_Click" IsEnabled="False"/>
                         </StackPanel>
                     </Grid>
-                    <ListBox x:Name="SourceFilesListBox" Grid.Row="1" Margin="0,10,0,0" BorderThickness="0" Background="#FFDCD9D9"/>
+                    <ListBox x:Name="SourceFilesListBox" Grid.Row="1" Margin="0,10,0,0" BorderThickness="0" Background="#FFDCD9D9" Drop="SourceFilesListBox_Drop" AllowDrop="True" DragOver="SourceFilesListBox_DragOver"/>
                     <StackPanel x:Name="ResultFileStackPanel" Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal">
                         <TextBlock x:Name="ResultFileTextBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Result PDF" Margin="0" Padding="0" FontSize="18.667" VerticalAlignment="Center"/>
                         <TextBox x:Name="ResultFileTextBox" Margin="5,0" Width="648" Height="35" IsReadOnly="true"/>

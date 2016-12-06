@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.IO;
 using PdFuse.ViewModel;
+using System.Collections.Generic;
 
 namespace PdFuse.View
 {
@@ -112,20 +113,65 @@ namespace PdFuse.View
             openFileDialog.Title = "Add PDF documents";
             openFileDialog.Multiselect = true;
             if (openFileDialog.ShowDialog() == true)
+                AddPathsToList(openFileDialog.FileNames);
+        }
+
+        /// <summary>
+        /// Filter dragged files to the SourceFilesListBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SourceFilesListBox_DragOver(object sender, DragEventArgs e)
+        {
+            bool dropEnabled = true;
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                foreach (string fileName in openFileDialog.FileNames)
-                    SourceFilesListBox.Items.Add(fileName);
+                string[] filenames = e.Data.GetData(DataFormats.FileDrop) as string[];
 
-                if (SourceFilesListBox.Items.Count > 0)
-                {
-                    DeleteButton.IsEnabled = true;
-
-                    if (SourceFilesListBox.Items.Count > 1)
-                        EnableMoveButtons();
-                }
-
-                ProcessStatusTextBlock.Text = string.Empty;
+                foreach (string filename in filenames)
+                    if (Path.GetExtension(filename).ToLowerInvariant() != ".pdf")
+                    {
+                        dropEnabled = false;
+                        break;
+                    }
             }
+
+            if (!dropEnabled)
+            {
+                e.Effects = DragDropEffects.None;
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Get the dragged file paths 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SourceFilesListBox_Drop(object sender, DragEventArgs e)
+        {
+            AddPathsToList(e.Data.GetData(DataFormats.FileDrop) as string[]);
+        }
+
+        /// <summary>
+        /// Add the chosen file paths to the list
+        /// </summary>
+        /// <param name="fileNames"></param>
+        private void AddPathsToList(string[] fileNames)
+        {
+            foreach (string fileName in fileNames)
+                SourceFilesListBox.Items.Add(fileName);
+
+            if (SourceFilesListBox.Items.Count > 0)
+            {
+                DeleteButton.IsEnabled = true;
+
+                if (SourceFilesListBox.Items.Count > 1)
+                    EnableMoveButtons();
+            }
+
+            ProcessStatusTextBlock.Text = string.Empty;
         }
 
         /// <summary>
@@ -313,6 +359,7 @@ namespace PdFuse.View
         }
 
         #endregion
+
     }
 }
 

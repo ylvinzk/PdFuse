@@ -5,7 +5,6 @@ using Microsoft.Win32;
 using System;
 using System.IO;
 using PdFuse.ViewModel;
-using System.Collections.Generic;
 
 namespace PdFuse.View
 {
@@ -241,29 +240,17 @@ namespace PdFuse.View
         /// <param name="e"></param>
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (SourceFilesListBox.Items.Count < 2)
-            {
-                ProcessStatusTextBlock.Text = "Not enough documents to merge";
-                return;
-            }
-
             _mergerViewModel = new MergerViewModel(SourceFilesListBox.Items, ResultFileTextBox.Text);
 
-            if (_mergerViewModel.ResultPathIsEmpty())
+            if (!string.IsNullOrEmpty(_mergerViewModel.StatusMessage))
             {
-                ProcessStatusTextBlock.Text = "Empty result path is invalid";
-                return;
-            }
-
-            if (_mergerViewModel.ResultPathIsInUse())
-            {
-                ProcessStatusTextBlock.Text = "Can not use same path in source and result";
+                ProcessStatusTextBlock.Text = _mergerViewModel.StatusMessage;
                 return;
             }
 
             ProcessStatusTextBlock.Text = "Merge in progress...";
             _mergerViewModel.MergePdf();
-            ProcessStatusTextBlock.Text = "Merge is complete";
+            ProcessStatusTextBlock.Text = _mergerViewModel.StatusMessage;
         }
 
         /// <summary>

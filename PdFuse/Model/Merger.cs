@@ -8,9 +8,6 @@ namespace PdFuse.Model
 {
     public class Merger
     {
-        private PdfReader _pdfReader;
-        private Document _document;
-        private PdfCopy _pdfCopy;
         private List<string> _sourceFiles;
         private string _resultPath;
         private string actualFileName;
@@ -30,26 +27,26 @@ namespace PdFuse.Model
             {
                 using (FileStream fileStream = new FileStream(_resultPath, FileMode.Create))
                 {
-                    _document = new Document();
-                    _pdfCopy = new PdfCopy(_document, fileStream);
-                    _document.Open();
+                    Document document = new Document();
+                    PdfCopy pdfCopy = new PdfCopy(document, fileStream);
+                    document.Open();
 
                     foreach (string file in _sourceFiles)
                     {
                         actualFileName = Path.GetFileNameWithoutExtension(file);
-                        _pdfReader = new PdfReader(file);
+                        PdfReader pdfReader = new PdfReader(file);
 
-                        for (int page = 1; page <= _pdfReader.NumberOfPages; page++)
-                            _pdfCopy.AddPage(_pdfCopy.GetImportedPage(_pdfReader, page));
+                        for (int page = 1; page <= pdfReader.NumberOfPages; page++)
+                            pdfCopy.AddPage(pdfCopy.GetImportedPage(pdfReader, page));
 
-                        _pdfReader.Close();
+                        pdfReader.Close();
                     }
 
-                    _document.Close();
+                    document.Close();
                     StatusMessage = "Merge is complete";
                 }
             }
-            catch (InvalidPdfException e)
+            catch (InvalidPdfException invalidPdfException)
             {
                 StatusMessage = "Damaged : " + actualFileName;
                 File.Delete(_resultPath);

@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.IO;
 using PdFuse.ViewModel;
+using Ookii.Dialogs.Wpf;
 
 namespace PdFuse.View
 {
@@ -12,9 +13,7 @@ namespace PdFuse.View
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {
-        private MergerViewModel _mergerViewModel;
-
+    {        
         public MainWindow()
         {
             InitializeComponent();
@@ -54,47 +53,51 @@ namespace PdFuse.View
 
         #endregion
 
-        #region Split Tab
-        //private void PdfSourceSearchButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    ProgressStatusTextBlock.Text = string.Empty;
+        #region Extract Tab
+        private void SourceSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "PDF files (*.pdf)|*.pdf";
+            openFileDialog.Title = "Open source PDF document";
+            if (openFileDialog.ShowDialog() == true)
+                SourcePathTextBox.Text = openFileDialog.FileName;
+            
+        }
 
-        //    OpenFileDialog openFileDialog = new OpenFileDialog();
-        //    openFileDialog.Filter = "PDF files (*.pdf)|*.pdf";
-        //    if (openFileDialog.ShowDialog() == true)
-        //    {
-        //        _splitter = new Splitter(openFileDialog.FileName);
-        //        PdfSourcePathTextBox.Text = _splitter.SourcePath;
-        //        PdfDestinationPathTextBox.Text = _splitter.ResultPath;
-        //        SplitButton.IsEnabled = true;
-        //        PdfDestinationSearchButton.IsEnabled = true;
-        //    }
-        //}
+        private void ResultFolderSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog();
+            if (folderBrowserDialog.ShowDialog() == true)
+                ResultFolderPathTextBox.Text = folderBrowserDialog.SelectedPath;       
+        }
 
-        //private void PdfDestinationSearchButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    VistaFolderBrowserDialog outputPathDialog = new VistaFolderBrowserDialog();
-        //    if (outputPathDialog.ShowDialog() == true)
-        //        PdfDestinationPathTextBox.Text = _splitter.SetResultPath(outputPathDialog.SelectedPath);
-        //}
+        private void ExtractButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExtractorViewModel _extractorViewModel = 
+                new ExtractorViewModel(SourcePathTextBox.Text,
+                ResultFolderPathTextBox.Text, SelectedPagesRadioButton.IsChecked,
+                PageSelectionTextBox.Text);
 
-        //private void SplitButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (AllPagesRadioButton.IsChecked == true)
-        //        _splitter.SplitAllPages();
-        //    else
-        //        _splitter.SplitSelectedPages(PageSelectionTextBox.Text);
-        //}
+            if (!string.IsNullOrEmpty(_extractorViewModel.StatusMessage))
+            {
+                ExtractStatusTextBlock.Text = _extractorViewModel.StatusMessage;
+                return;
+            }
 
-        //private void SelectedPagesRadioButton_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    PageSelectionStackPanel.Visibility = Visibility.Visible;
-        //}
+            ExtractStatusTextBlock.Text = "Extraction in progress...";
+            _extractorViewModel.Extract();
+        }
 
-        //private void SelectedPagesRadioButton_Unchecked(object sender, RoutedEventArgs e)
-        //{
-        //    PageSelectionStackPanel.Visibility = Visibility.Hidden;
-        //}
+        private void SelectedPagesRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            //PageSelectionStackPanel.Visibility = Visibility.Visible;
+        }
+
+        private void SelectedPagesRadioButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            //PageSelectionStackPanel.Visibility = Visibility.Hidden;
+        }
+
         #endregion
 
         #region Merge Tab
@@ -170,7 +173,7 @@ namespace PdFuse.View
                     EnableMoveButtons();
             }
 
-            ProcessStatusTextBlock.Text = string.Empty;
+            MergeStatusTextBlock.Text = string.Empty;
         }
 
         /// <summary>
@@ -229,7 +232,7 @@ namespace PdFuse.View
             if (saveFileDialog.ShowDialog() == true)
             {
                 ResultFileTextBox.Text = saveFileDialog.FileName;
-                ProcessStatusTextBlock.Text = string.Empty;
+                MergeStatusTextBlock.Text = string.Empty;
             }
         }
 
@@ -240,17 +243,17 @@ namespace PdFuse.View
         /// <param name="e"></param>
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            _mergerViewModel = new MergerViewModel(SourceFilesListBox.Items, ResultFileTextBox.Text);
+            MergerViewModel _mergerViewModel = new MergerViewModel(SourceFilesListBox.Items, ResultFileTextBox.Text);
 
             if (!string.IsNullOrEmpty(_mergerViewModel.StatusMessage))
             {
-                ProcessStatusTextBlock.Text = _mergerViewModel.StatusMessage;
+                MergeStatusTextBlock.Text = _mergerViewModel.StatusMessage;
                 return;
             }
 
-            ProcessStatusTextBlock.Text = "Merge in progress...";
+            MergeStatusTextBlock.Text = "Merge in progress...";
             _mergerViewModel.MergePdf();
-            ProcessStatusTextBlock.Text = _mergerViewModel.StatusMessage;
+            MergeStatusTextBlock.Text = _mergerViewModel.StatusMessage;
         }
 
         /// <summary>
@@ -262,7 +265,7 @@ namespace PdFuse.View
         {
             if (string.IsNullOrEmpty(ResultFileTextBox.Text))
             {
-                ProcessStatusTextBlock.Text = "Empty result path is invalid";
+                MergeStatusTextBlock.Text = "Empty result path is invalid";
                 return;
             }
 
@@ -276,7 +279,7 @@ namespace PdFuse.View
         /// <param name="operation"></param>
         private void OperateOnSelectedFile(FileOperation operation)
         {
-            ProcessStatusTextBlock.Text = string.Empty;
+            MergeStatusTextBlock.Text = string.Empty;
 
             int selectedPathIndex = SourceFilesListBox.SelectedIndex;
             object selectedPath = SourceFilesListBox.Items.GetItemAt(selectedPathIndex);
@@ -346,7 +349,6 @@ namespace PdFuse.View
         }
 
         #endregion
-
     }
 }
 

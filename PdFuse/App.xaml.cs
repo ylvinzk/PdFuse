@@ -12,12 +12,12 @@ namespace PdFuse
     /// </summary>
     public partial class App : Application, ISingleInstanceApp
     {
-        private const string Unique = "UniqueStringForSingleInstanceApp";
+        private const string _uniqueString = "UniqueStringForPdFuse";
 
         [STAThread]
         public static void Main()
-        {
-            if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
+        {            
+            if (SingleInstance<App>.InitializeAsFirstInstance(_uniqueString))
             {
                 var application = new App();
                 application.InitializeComponent();

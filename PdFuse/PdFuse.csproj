@@ -78,8 +78,7 @@
     <Compile Include="Model\SplitType.cs" />
     <Compile Include="ViewModel\MergerViewModel.cs" />
     <Compile Include="ViewModel\FileOperation.cs" />
-    <Compile Include="ViewModel\SplitterViewModel.cs" />
-    <Compile Include="ViewModel\Testo.cs" />
+    <Compile Include="ViewModel\ExtractorViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -94,7 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Merger.cs" />
-    <Compile Include="Model\Splitter.cs" />
+    <Compile Include="Model\Extractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

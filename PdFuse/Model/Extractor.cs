@@ -1,45 +1,37 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace PdFuse.Model
 {
-    public class Splitter
+    public class Extractor
     {
         private PdfReader _pdfReader;
         private Document _document;
         private PdfCopy _pdfCopy;
         private string _resultFileName;
-        private string _pageRangesPattern =
-            "(?!(([1-9]{1}[0-9]*)-(([1-9]{1}[0-9]*))-))^(([1-9]{1}[0-9]*)|(([1-9]{1}[0-9]*)((,?([1-9]{1}[0-9]*))|(-?([1-9]{1}[0-9]*)){1})*))$";
-
-        public string SourcePath { get; private set; }
-        public string ResultPath { get; private set; }
+        private string _sourcePath;
+        private string _resultFolderPath;
         
-
-        public Splitter(string sourcePath)
+        public Extractor(string sourcePath, string resultFolderPath)
         {
-            SourcePath = sourcePath;
+            _sourcePath = sourcePath;
             _resultFileName = @"\"
-            + Path.GetFileNameWithoutExtension(SourcePath) + "_pag";
-            ResultPath = Path.GetDirectoryName(SourcePath);
+            + Path.GetFileNameWithoutExtension(_sourcePath) + "_pag";
+
+            if (string.IsNullOrEmpty(resultFolderPath))
+                _resultFolderPath = Path.GetDirectoryName(_sourcePath);
         }
 
-        internal string SetResultPath(string resultPath)
+        public void ExtractAllPages()
         {
-            return ResultPath = resultPath;
-        }
-
-        internal void SplitAllPages()
-        {
-           _pdfReader = new PdfReader(SourcePath);
+           _pdfReader = new PdfReader(_sourcePath);
 
             for (int page = 1; page <= _pdfReader.NumberOfPages; page++)
             {
                 _document = new Document();
                 _pdfCopy =
-                new PdfCopy(_document, new FileStream(ResultPath
+                new PdfCopy(_document, new FileStream(_resultFolderPath
                     + _resultFileName + page + ".pdf", FileMode.Create));
                 _document.Open();
                 _pdfCopy.AddPage(_pdfCopy.GetImportedPage(_pdfReader, page));
@@ -49,20 +41,19 @@ namespace PdFuse.Model
             _pdfReader.Close();
         }
 
-        internal void SplitSelectedPages(string pageRanges)
-        {            
-            if (Regex.IsMatch(pageRanges, _pageRangesPattern))              
-                foreach (string pageRange in pageRanges.Split(','))
-                {                    
-                    if (pageRange.Contains("-"))
-                        SplitPdf(SplitType.Range, pageRange);
-                           
-                    else
-                        SplitPdf(SplitType.Specific, pageRange);
-                }
+        public void ExtractSelectedPages(string pageRanges)
+        {
+            foreach (string pageRange in pageRanges.Split(','))
+            {
+                if (pageRange.Contains("-"))
+                    Extract(SplitType.Range, pageRange);
+
+                else
+                    Extract(SplitType.Specific, pageRange);
+            }
         }
 
-        private void SplitPdf(SplitType splitType, string pageRange)
+        private void Extract(SplitType splitType, string pageRange)
         {            
             int firstPage;
             int lastPage;
@@ -82,10 +73,10 @@ namespace PdFuse.Model
                     break;
             }
 
-            using (FileStream fileStream = new FileStream(ResultPath 
+            using (FileStream fileStream = new FileStream(_resultFolderPath 
                 + _resultFileName + pageName + ".pdf", FileMode.Create))
             {
-                _pdfReader = new PdfReader(SourcePath);
+                _pdfReader = new PdfReader(_sourcePath);
                 _document = new Document();
                 _pdfCopy = new PdfCopy(_document, fileStream);
                 _document.Open();

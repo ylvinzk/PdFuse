@@ -7,7 +7,6 @@ namespace PdFuse.ViewModel
 {
     public class MergerViewModel
     {
-        private Merger _merger;
         private List<string> _sourceFiles;
         private string _resultPath;
 
@@ -19,13 +18,13 @@ namespace PdFuse.ViewModel
             _resultPath = resultPath;
             StatusMessage = string.Empty;
 
-            CheckValidity();
+            CheckPathValidity();
         }
 
         /// <summary>
         /// Check for validation to merge
         /// </summary>
-        public void CheckValidity()
+        private void CheckPathValidity()
         {
             if (_sourceFiles.Count < 2)
             {
@@ -44,7 +43,6 @@ namespace PdFuse.ViewModel
                 StatusMessage = "Can not use same path in source and result";
                 return;
             }
-
         }
 
         /// <summary>
@@ -52,7 +50,7 @@ namespace PdFuse.ViewModel
         /// </summary>
         public void MergePdf()
         {
-            _merger = new Merger(_sourceFiles, _resultPath);
+            Merger _merger = new Merger(_sourceFiles, _resultPath);
 
             _merger.MergePdf();
             StatusMessage = _merger.StatusMessage;

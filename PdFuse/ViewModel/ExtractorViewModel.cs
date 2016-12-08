@@ -1,5 +1,4 @@
 ﻿using PdFuse.Model;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace PdFuse.ViewModel
@@ -10,7 +9,6 @@ namespace PdFuse.ViewModel
         private string _resultsFolderPath;
         private bool? _extractBySelection;
         private string _pageSelection;
-        private string _resultFileName;
 
         public string StatusMessage { get; private set; }
 
@@ -23,10 +21,10 @@ namespace PdFuse.ViewModel
             _extractBySelection = extractBySelection;
             _pageSelection = PageSelection;
 
-            CheckPathValidity();
+            CheckInputValidity();
         }
 
-        private void CheckPathValidity()
+        private void CheckInputValidity()
         {
             if (string.IsNullOrEmpty(_sourcePath))
             {
@@ -38,24 +36,43 @@ namespace PdFuse.ViewModel
                 "(?!(([1-9]{1}[0-9]*)-(([1-9]{1}[0-9]*))-))"
                 + "^(([1-9]{1}[0-9]*)|(([1-9]{1}[0-9]*)((,?([1-9]{1}[0-9]*))|"
                 + "(-?([1-9]{1}[0-9]*)){1})*))$";
-            //"(?!(([1-9]{1}[0-9]*)-(([1-9]{1}[0-9]*))-))^(([1-9]{1}[0-9]*)|(([1-9]{1}[0-9]*)((,?([1-9]{1}[0-9]*))|(-?([1-9]{1}[0-9]*)){1})*))$";
 
             if (_extractBySelection == true
                 && !Regex.IsMatch(_pageSelection, pageRangesPattern))
             {
-                StatusMessage = "Invalid page selection";
+                StatusMessage = "Invalid page selection. Follow the guide";
                 return;
+            }
+            else
+            {
+                foreach (string pageRange in _pageSelection.Split(','))
+                {
+                    if (pageRange.Contains("-")
+                        && (int.Parse(pageRange.Split('-')[0]) > int.Parse(pageRange.Split('-')[1])))
+                    {
+                        StatusMessage = "Invalid page selection. First page of range is greater than last page";
+                        return;
+                    }
+                }
+                    
             }
         }
 
         public void Extract()
         {
-            Extractor _extractor = new Extractor(_sourcePath, _resultsFolderPath);
-
             if (_extractBySelection == true)
-                _extractor.ExtractSelectedPages(_pageSelection);
+            {
+                PartialExtractor partialExtractor = new PartialExtractor(_sourcePath, _resultsFolderPath);
+                partialExtractor.Extract(_pageSelection);
+                StatusMessage = partialExtractor.statusMessage;
+            }
+
             else
-                _extractor.ExtractAllPages();
+            {
+                CompleteExtractor completeExtractor = new CompleteExtractor(_sourcePath, _resultsFolderPath);
+                completeExtractor.Extract();
+                StatusMessage = completeExtractor.statusMessage;
+            }
         }
     }
 }

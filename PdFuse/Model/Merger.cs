@@ -21,7 +21,7 @@ namespace PdFuse.Model
             StatusMessage = string.Empty;
         }
 
-        public void MergePdf()
+        public void Merge()
         {
             try
             {
@@ -43,12 +43,12 @@ namespace PdFuse.Model
                     }
 
                     document.Close();
-                    StatusMessage = "Merge is complete";
+                    StatusMessage = "Merge is complete.";
                 }
             }
-            catch (InvalidPdfException invalidPdfException)
+            catch (InvalidPdfException)
             {
-                StatusMessage = "Damaged : " + actualFileName;
+                StatusMessage = "Damaged : " + actualFileName + ".";
                 File.Delete(_resultPath);
             }
         }

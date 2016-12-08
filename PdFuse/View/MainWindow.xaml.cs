@@ -60,42 +60,65 @@ namespace PdFuse.View
             openFileDialog.Filter = "PDF files (*.pdf)|*.pdf";
             openFileDialog.Title = "Open source PDF document";
             if (openFileDialog.ShowDialog() == true)
+            {
                 SourcePathTextBox.Text = openFileDialog.FileName;
-            
+                if (string.IsNullOrEmpty(ResultFolderPathTextBox.Text))
+                    ResultFolderPathTextBox.Text = Path.GetDirectoryName(openFileDialog.FileName) + @"\";
+                ExtractStatusTextBlock.Text = string.Empty;
+            }
         }
 
         private void ResultFolderSearchButton_Click(object sender, RoutedEventArgs e)
         {
             VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog();
             if (folderBrowserDialog.ShowDialog() == true)
-                ResultFolderPathTextBox.Text = folderBrowserDialog.SelectedPath;       
+            {
+                ResultFolderPathTextBox.Text = 
+                    folderBrowserDialog.SelectedPath + @"\"; 
+                ExtractStatusTextBlock.Text = string.Empty;
+            }                      
         }
 
         private void ExtractButton_Click(object sender, RoutedEventArgs e)
         {
-            ExtractorViewModel _extractorViewModel = 
+            ExtractorViewModel extractorViewModel = 
                 new ExtractorViewModel(SourcePathTextBox.Text,
                 ResultFolderPathTextBox.Text, SelectedPagesRadioButton.IsChecked,
                 PageSelectionTextBox.Text);
 
-            if (!string.IsNullOrEmpty(_extractorViewModel.StatusMessage))
+            if (!string.IsNullOrEmpty(extractorViewModel.StatusMessage))
             {
-                ExtractStatusTextBlock.Text = _extractorViewModel.StatusMessage;
+                ExtractStatusTextBlock.Text = extractorViewModel.StatusMessage;
                 return;
             }
 
             ExtractStatusTextBlock.Text = "Extraction in progress...";
-            _extractorViewModel.Extract();
+            extractorViewModel.Extract();
+            ExtractStatusTextBlock.Text = extractorViewModel.StatusMessage;
         }
 
         private void SelectedPagesRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            //PageSelectionStackPanel.Visibility = Visibility.Visible;
+            PageSelectionTextBox.IsEnabled = true;
+            ExtractStatusTextBlock.Text = string.Empty;
         }
 
         private void SelectedPagesRadioButton_Unchecked(object sender, RoutedEventArgs e)
         {
-            //PageSelectionStackPanel.Visibility = Visibility.Hidden;
+            PageSelectionTextBox.IsEnabled = false;
+            ExtractStatusTextBlock.Text = string.Empty;
+        }
+
+        private void OpenResultsFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(ResultFolderPathTextBox.Text))
+            {
+                ExtractStatusTextBlock.Text = "Empty result path is invalid";
+                return;
+            }
+
+            Process.Start(@"" + Path.GetDirectoryName(ResultFolderPathTextBox.Text));
+            e.Handled = true;
         }
 
         #endregion
@@ -252,7 +275,7 @@ namespace PdFuse.View
             }
 
             MergeStatusTextBlock.Text = "Merge in progress...";
-            _mergerViewModel.MergePdf();
+            _mergerViewModel.Merge();
             MergeStatusTextBlock.Text = _mergerViewModel.StatusMessage;
         }
 

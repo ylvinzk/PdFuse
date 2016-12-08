@@ -28,19 +28,19 @@ namespace PdFuse.ViewModel
         {
             if (_sourceFiles.Count < 2)
             {
-                StatusMessage = "Not enough documents to merge";
+                StatusMessage = "Not enough documents to merge.";
                 return;
             }
 
             if (string.IsNullOrEmpty(_resultPath))
             {
-                StatusMessage = "Empty result path is invalid";
+                StatusMessage = "Empty result path is invalid.";
                 return;
             }
 
             if (_sourceFiles.Exists(path => path.Equals(_resultPath)))
             {
-                StatusMessage = "Can not use same path in source and result";
+                StatusMessage = "Can not use same path in source and result.";
                 return;
             }
         }
@@ -48,11 +48,11 @@ namespace PdFuse.ViewModel
         /// <summary>
         /// Calls the merge method in Merger.cs
         /// </summary>
-        public void MergePdf()
+        public void Merge()
         {
             Merger _merger = new Merger(_sourceFiles, _resultPath);
 
-            _merger.MergePdf();
+            _merger.Merge();
             StatusMessage = _merger.StatusMessage;
         }
     }

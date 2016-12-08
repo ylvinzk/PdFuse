@@ -85,7 +85,7 @@
                     </Grid.RowDefinitions>
                     <StackPanel x:Name="SourceStackPanel" Orientation="Horizontal" Grid.Row="0" Margin="0,10,0,0">
                         <TextBlock x:Name="SourceTextBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Source PDF" Margin="0" Padding="0" FontSize="18.667" VerticalAlignment="Center"/>
-                        <TextBox x:Name="SourcePathTextBox" Margin="16,0,5,0" Width="631" Height="35" IsReadOnly="True"/>
+                        <TextBox x:Name="SourcePathTextBox" Margin="16,0,5,0" Width="631" Height="35" IsReadOnly="true"/>
                         <Button x:Name="SourceSearchButton" Content="Search" Style="{DynamicResource AppButton}" VerticalAlignment="Center" Height="35" Width="64" Click="SourceSearchButton_Click"/>
                     </StackPanel>
                     <StackPanel x:Name="ResultFolderStackPanel" Orientation="Horizontal" Grid.Row="1" Margin="0,10,0,0">
@@ -98,7 +98,7 @@
                         <RadioButton x:Name="SelectedPagesRadioButton" Content="Extract selected pages" VerticalContentAlignment="Center" Checked="SelectedPagesRadioButton_Checked" Unchecked="SelectedPagesRadioButton_Unchecked" HorizontalAlignment="Left"/>
                     </StackPanel>
                     <StackPanel x:Name="PageSelectionStackPanel" Grid.Row="3" Margin="0,10,0,0" Visibility="Visible" >
-                        <TextBox x:Name="PageSelectionTextBox" Height="35" Width="317" HorizontalAlignment="Left" adorners:Watermark.Text="Type pages to extract" adorners:Watermark.VisibleWhen="EmptyAndNotKeyboardFocused"/>
+                        <TextBox x:Name="PageSelectionTextBox" Height="35" Width="317" HorizontalAlignment="Left" adorners:Watermark.Text="Type pages to extract" adorners:Watermark.VisibleWhen="EmptyAndNotKeyboardFocused" IsEnabled="False"/>
                         <TextBlock x:Name="PageSelectionGuideTextBlock" HorizontalAlignment="Left" FontSize="14">
                             <Run Text="Use hyphen(-) for ranges, and comma(,)"/><LineBreak/>
                             <Run Text="for specific pages (No spaces). Examples: "/><LineBreak/>
@@ -107,10 +107,11 @@
                             <Run Text="Mix: 1,3,5-10"/>
                         </TextBlock>
                     </StackPanel>
-                    <Button x:Name="ExtractButton" Grid.Row="4" Margin="0,10,0,0" Content="Split" Style="{DynamicResource AppButton}" Height="35" HorizontalAlignment="Left" Width="64" Click="ExtractButton_Click"/>
-                    <StackPanel x:Name="ProgressStackPanel" Grid.Row="5" Margin="0,10,0,0">
-                        <TextBlock x:Name="ExtractStatusTextBlock" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <StackPanel Grid.Row="4" Margin="0,10,0,0" Orientation="Horizontal">
+                        <Button x:Name="ExtractButton" Content="Extract" Style="{DynamicResource AppButton}" Height="35" HorizontalAlignment="Left" Width="64" Click="ExtractButton_Click"/>
+                        <TextBlock x:Name="ExtractStatusTextBlock" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"></TextBlock>
                     </StackPanel>
+                    <Button Grid.Row="5" Margin="0,30,0,0" x:Name="OpenResultsFolderButton" Content="Open results folder" Width="170" HorizontalAlignment="Right" Style="{DynamicResource AppButton}" Click="OpenResultsFolderButton_Click"/>
                 </Grid>
             </TabItem>
             <!--Help Tab-->

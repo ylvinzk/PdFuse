@@ -43,22 +43,20 @@ namespace PdFuse.ViewModel
                 StatusMessage = "Invalid page selection. Follow the guide";
                 return;
             }
+
             else
             {
                 foreach (string pageRange in _pageSelection.Split(','))
-                {
                     if (pageRange.Contains("-")
                         && (int.Parse(pageRange.Split('-')[0]) > int.Parse(pageRange.Split('-')[1])))
                     {
                         StatusMessage = "Invalid page selection. First page of range is greater than last page";
                         return;
-                    }
-                }
-                    
+                    }                    
             }
         }
 
-        public void Extract()
+        internal void Extract()
         {
             if (_extractBySelection == true)
             {

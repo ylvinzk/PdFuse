@@ -21,31 +21,16 @@ namespace PdFuse.View
 
         #region General Controls
 
-        /// <summary>
-        /// Close app
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
-        /// <summary>
-        /// Minimize window
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }
 
-        /// <summary>
-        /// Drag window by the title bar
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void TitleBarGrid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             DragMove();
@@ -54,6 +39,7 @@ namespace PdFuse.View
         #endregion
 
         #region Extract Tab
+
         private void SourceSearchButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -125,11 +111,6 @@ namespace PdFuse.View
 
         #region Merge Tab
 
-        /// <summary>
-        /// Add PDF files to the list
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void AddFileButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -141,11 +122,6 @@ namespace PdFuse.View
                 AddPathsToList(openFileDialog.FileNames);
         }
 
-        /// <summary>
-        /// Filter dragged files to the SourceFilesListBox
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void SourceFilesListBox_DragOver(object sender, DragEventArgs e)
         {
             bool dropEnabled = true;
@@ -169,20 +145,11 @@ namespace PdFuse.View
             }
         }
 
-        /// <summary>
-        /// Get the dragged file paths 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void SourceFilesListBox_Drop(object sender, DragEventArgs e)
         {
             AddPathsToList(e.Data.GetData(DataFormats.FileDrop) as string[]);
         }
 
-        /// <summary>
-        /// Add the chosen file paths to the list
-        /// </summary>
-        /// <param name="fileNames"></param>
         private void AddPathsToList(string[] fileNames)
         {
             foreach (string fileName in fileNames)
@@ -199,33 +166,18 @@ namespace PdFuse.View
             MergeStatusTextBlock.Text = string.Empty;
         }
 
-        /// <summary>
-        /// Move up a file path in the list
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MoveUpButton_Click(object sender, RoutedEventArgs e)
         {
             if (SourceFilesListBox.SelectedItems.Count > 0)
                 OperateOnSelectedFile(FileOperation.MoveUp);
         }
 
-        /// <summary>
-        /// Move down a file path in the list
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MoveDownButton_Click(object sender, RoutedEventArgs e)
         {
             if (SourceFilesListBox.SelectedItems.Count > 0)
                 OperateOnSelectedFile(FileOperation.MoveDown);
         }
 
-        /// <summary>
-        /// Delete a file path in the list
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             if (SourceFilesListBox.SelectedItems.Count > 0)
@@ -239,11 +191,6 @@ namespace PdFuse.View
             }
         }
 
-        /// <summary>
-        /// Define the result path to save the merged file
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ResultFileSearchButton_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -259,11 +206,6 @@ namespace PdFuse.View
             }
         }
 
-        /// <summary>
-        /// Start the merging process
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
             MergerViewModel _mergerViewModel = new MergerViewModel(SourceFilesListBox.Items, ResultFileTextBox.Text);
@@ -279,11 +221,6 @@ namespace PdFuse.View
             MergeStatusTextBlock.Text = _mergerViewModel.StatusMessage;
         }
 
-        /// <summary>
-        /// Open the directory to the result file
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void OpenResultFolderButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(ResultFileTextBox.Text))
@@ -296,10 +233,6 @@ namespace PdFuse.View
             e.Handled = true;
         }
 
-        /// <summary>
-        /// Apply an operation to a file path in the list
-        /// </summary>
-        /// <param name="operation"></param>
         private void OperateOnSelectedFile(FileOperation operation)
         {
             MergeStatusTextBlock.Text = string.Empty;
@@ -338,18 +271,12 @@ namespace PdFuse.View
             SourceFilesListBox.SelectedIndex = nextPosition;
         }
 
-        /// <summary>
-        /// Enable Move buttons
-        /// </summary>
         private void EnableMoveButtons()
         {
             MoveDownButton.IsEnabled = true;
             MoveUpButton.IsEnabled = true;
         }
 
-        /// <summary>
-        /// Disable Move buttons
-        /// </summary>
         private void DisableMoveButtons()
         {
             MoveDownButton.IsEnabled = false;
@@ -374,4 +301,3 @@ namespace PdFuse.View
         #endregion
     }
 }
-

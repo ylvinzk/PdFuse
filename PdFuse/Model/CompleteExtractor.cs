@@ -5,6 +5,9 @@ using System.IO;
 
 namespace PdFuse.Model
 {
+    /// <summary>
+    /// Extractor for all pages
+    /// </summary>
     public class CompleteExtractor : Extractor
     {
         public CompleteExtractor(string sourcePath, string resultFolderPath)

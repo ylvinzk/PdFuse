@@ -21,9 +21,6 @@ namespace PdFuse.ViewModel
             CheckPathValidity();
         }
 
-        /// <summary>
-        /// Check for validation to merge
-        /// </summary>
         private void CheckPathValidity()
         {
             if (_sourceFiles.Count < 2)
@@ -45,13 +42,9 @@ namespace PdFuse.ViewModel
             }
         }
 
-        /// <summary>
-        /// Calls the merge method in Merger.cs
-        /// </summary>
-        public void Merge()
+        internal void Merge()
         {
             Merger _merger = new Merger(_sourceFiles, _resultPath);
-
             _merger.Merge();
             StatusMessage = _merger.StatusMessage;
         }

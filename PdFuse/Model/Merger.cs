@@ -21,7 +21,7 @@ namespace PdFuse.Model
             StatusMessage = string.Empty;
         }
 
-        public void Merge()
+        internal void Merge()
         {
             try
             {

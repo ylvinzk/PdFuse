@@ -4,6 +4,9 @@ using System.IO;
 
 namespace PdFuse.Model
 {
+    /// <summary>
+    /// Base class for the extractors
+    /// </summary>
     public abstract class Extractor
     {
         internal PdfReader pdfReader;

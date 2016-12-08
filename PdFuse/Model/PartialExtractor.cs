@@ -6,6 +6,9 @@ using System.IO;
 
 namespace PdFuse.Model
 {
+    /// <summary>
+    /// Extractor for specific and ranged pages
+    /// </summary>
     public class PartialExtractor : Extractor
     {
         public PartialExtractor(string sourcePath, string resultFolderPath)
@@ -69,4 +72,3 @@ namespace PdFuse.Model
         }
     }
 }
-
